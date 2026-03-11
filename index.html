@@ -1,4 +1,4 @@
-d<!doctype html>
+<!doctype html>
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
@@ -7,23 +7,10 @@ d<!doctype html>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- YouTube Video Background -->
-    <div id="youtube-bg-container">
-      <div id="youtube-player"></div>
-    </div>
-
-    <!-- Fallback video (if YouTube fails) -->
-    <video id="video-bg" autoplay muted loop playsinline style="display: none">
-      <source
-        src="https://assets.mixkit.co/videos/preview/mixkit-night-sky-with-stars-and-clouds-24064-large.mp4"
-        type="video/mp4"
-      />
-    </video>
-
+    <!-- Tesla-style 3D Background -->
     <div id="canvas-container"></div>
     <div class="overlay"></div>
     <div class="celebration-container" id="celebration-container"></div>
-    <div class="scanlines"></div>
 
     <div class="container" id="mainContainer">
       <h1>⏱️ ТАЙМЕР КУНИЦЫ</h1>
@@ -64,26 +51,8 @@ d<!doctype html>
       <div class="message" id="message"></div>
     </div>
 
-    <!-- YouTube IFrame Player API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-      // YouTube API callback - must be global
-      function onYouTubeIframeAPIReady() {
-        if (typeof initYouTubePlayer === "function") {
-          initYouTubePlayer();
-        }
-      }
-    </script>
-
-    <!-- Three.js Libraries -->
+    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-
     <script src="main.js"></script>
   </body>
 </html>
