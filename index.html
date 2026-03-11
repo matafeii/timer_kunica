@@ -7,8 +7,13 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Video Background -->
-    <video id="video-bg" autoplay muted loop playsinline>
+    <!-- YouTube Video Background -->
+    <div id="youtube-bg-container">
+      <div id="youtube-player"></div>
+    </div>
+
+    <!-- Fallback video (if YouTube fails) -->
+    <video id="video-bg" autoplay muted loop playsinline style="display: none">
       <source
         src="https://assets.mixkit.co/videos/preview/mixkit-night-sky-with-stars-and-clouds-24064-large.mp4"
         type="video/mp4"
@@ -58,6 +63,17 @@
 
       <div class="message" id="message"></div>
     </div>
+
+    <!-- YouTube IFrame Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      // YouTube API callback - must be global
+      function onYouTubeIframeAPIReady() {
+        if (typeof initYouTubePlayer === "function") {
+          initYouTubePlayer();
+        }
+      }
+    </script>
 
     <!-- Three.js Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

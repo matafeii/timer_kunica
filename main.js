@@ -1,8 +1,64 @@
 // === VIDEO BACKGROUND SETUP ===
 const videoBg = document.getElementById('video-bg');
 let videoLoaded = false;
+let youtubePlayer = null;
 
-// Список видео для разных состояний
+// YouTube video ID for fireplace (relaxing fire)
+const FIREPLACE_VIDEO_ID = 'u5Q1pNcf6C4'; // Cozy fireplace with crackling fire
+
+// Make these functions global so they can be called from HTML
+window.initYouTubePlayer = function() {
+    if (typeof YT !== 'undefined' && YT.Player) {
+        youtubePlayer = new YT.Player('youtube-player', {
+            videoId: FIREPLACE_VIDEO_ID,
+            playerVars: {
+                'autoplay': 1,
+                'loop': 1,
+                'playlist': FIREPLACE_VIDEO_ID,
+                'mute': 1,
+                'controls': 0,
+                'showinfo': 0,
+                'rel': 0,
+                'iv_load_policy': 3,
+                'enablejsapi': 1,
+                'origin': window.location.origin
+            },
+            events: {
+                'onReady': onYouTubePlayerReady,
+                'onError': onYouTubePlayerError
+            }
+        });
+    }
+};
+
+function onYouTubePlayerReady(event) {
+    videoLoaded = true;
+    event.target.playVideo();
+    // Darken the video with CSS filter
+    setTimeout(() => {
+        const playerEl = document.getElementById('youtube-player');
+        if (playerEl) {
+            const iframe = playerEl.querySelector('iframe');
+            if (iframe) {
+                iframe.style.filter = 'brightness(0.4) contrast(1.2) saturate(0.8)';
+            }
+        }
+    }, 1000);
+}
+
+function onYouTubePlayerError(event) {
+    console.log('YouTube player error, falling back to video');
+    document.getElementById('youtube-bg-container').style.display = 'none';
+    videoBg.style.display = 'block';
+}
+
+// Fallback - если видео не загрузится, используем Three.js сцену
+videoBg.addEventListener('error', () => {
+    console.log('Video failed to load, using 3D scene only');
+    videoBg.style.display = 'none';
+});
+
+// Список видео для разных состояний (fallback)
 const nightVideos = [
     'https://assets.mixkit.co/videos/preview/mixkit-night-sky-with-stars-and-clouds-24064-large.mp4',
     'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4',
@@ -655,7 +711,7 @@ function updateDisplay() {
     display.textContent = `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
 
-function startTimer() {
+window.startTimer = function() {
     if (isRunning) return;
 
     const mins = parseInt(minutesInput.value) || 0;
@@ -686,9 +742,9 @@ function startTimer() {
             timerFinished();
         }
     }, 1000);
-}
+};
 
-function stopTimer() {
+window.stopTimer = function() {
     if (!isRunning) return;
 
     clearInterval(timerInterval);
@@ -696,9 +752,9 @@ function stopTimer() {
     isTimerRunning = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-}
+};
 
-function resetTimer() {
+window.resetTimer = function() {
     stopTimer();
     remainingSeconds = 0;
     totalSeconds = 0;
@@ -723,7 +779,7 @@ function resetTimer() {
     // Clear confetti
     const container = document.getElementById('celebration-container');
     container.innerHTML = '';
-}
+};
 
 function timerFinished() {
     stopTimer();
