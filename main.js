@@ -1,16 +1,16 @@
-// === VIDEO BACKGROUND SETUP ===
-const videoBg = document.getElementById('video-bg');
-let videoLoaded = false;
-let youtubePlayer = null;
+// === TESLA-STYLE 3D BACKGROUND ===
+let scene, camera, renderer;
+let particles, particleGeometry;
+let particlePositions = [];
+let particleVelocities = [];
+let connections = [];
+let mouseX = 0, mouseY = 0;
+let targetX = 0, targetY = 0;
 
-// YouTube video ID for fireplace (relaxing fire)
-const FIREPLACE_VIDEO_ID = 'u5Q1pNcf6C4'; // Cozy fireplace with crackling fire
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
 
-// Make these functions global so they can be called from HTML
-window.initYouTubePlayer = function() {
-    if (typeof YT !== 'undefined' && YT.Player) {
-        youtubePlayer = new YT.Player('youtube-player', {
-            videoId: FIREPLACE_VIDEO_ID,
+function initTeslaBackground() {
             playerVars: {
                 'autoplay': 1,
                 'loop': 1,
