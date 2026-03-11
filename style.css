@@ -1,0 +1,414 @@
+/* === BASE STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #000;
+}
+
+/* === VIDEO BACKGROUND === */
+#video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  filter: brightness(0.4) contrast(1.1) saturate(0.8);
+  transition: all 2s ease;
+}
+
+/* === CANVAS CONTAINER === */
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+#canvas-container canvas {
+  display: block;
+}
+
+/* === OVERLAY === */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* === MAIN CONTAINER === */
+.container {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 40px 60px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 25px;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(233, 69, 96, 0.15),
+    0 0 120px rgba(0, 255, 136, 0.1),
+    inset 0 0 50px rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: containerFloat 6s ease-in-out infinite;
+}
+
+@keyframes containerFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* === HEADING === */
+h1 {
+  font-size: 2.8rem;
+  margin-bottom: 30px;
+  color: #e94560;
+  text-shadow:
+    0 0 10px rgba(233, 69, 96, 1),
+    0 0 30px rgba(233, 69, 96, 0.8),
+    0 0 60px rgba(233, 69, 96, 0.5),
+    0 0 100px rgba(233, 69, 96, 0.3);
+  letter-spacing: 5px;
+  animation: titlePulse 2s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%,
+  100% {
+    text-shadow:
+      0 0 10px rgba(233, 69, 96, 1),
+      0 0 30px rgba(233, 69, 96, 0.8),
+      0 0 60px rgba(233, 69, 96, 0.5);
+  }
+  50% {
+    text-shadow:
+      0 0 20px rgba(233, 69, 96, 1),
+      0 0 50px rgba(233, 69, 96, 0.9),
+      0 0 80px rgba(233, 69, 96, 0.7);
+  }
+}
+
+/* === TIMER DISPLAY === */
+.timer-display {
+  font-size: 6rem;
+  font-weight: bold;
+  margin: 30px 0;
+  font-family: "Courier New", monospace;
+  color: #00ff88;
+  text-shadow:
+    0 0 20px rgba(0, 255, 136, 1),
+    0 0 40px rgba(0, 255, 136, 0.8),
+    0 0 80px rgba(0, 255, 136, 0.5),
+    0 0 120px rgba(0, 255, 136, 0.3);
+  letter-spacing: 8px;
+  animation: timerGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes timerGlow {
+  from {
+    text-shadow:
+      0 0 20px rgba(0, 255, 136, 1),
+      0 0 40px rgba(0, 255, 136, 0.8),
+      0 0 80px rgba(0, 255, 136, 0.5);
+  }
+  to {
+    text-shadow:
+      0 0 30px rgba(0, 255, 136, 1),
+      0 0 60px rgba(0, 255, 136, 0.9),
+      0 0 100px rgba(0, 255, 136, 0.7);
+  }
+}
+
+/* === INPUT GROUP === */
+.input-group {
+  margin: 20px 0;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group label {
+  font-size: 1.3rem;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.input-group input {
+  width: 90px;
+  padding: 12px;
+  font-size: 1.3rem;
+  border: none;
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  backdrop-filter: blur(15px);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.input-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 0 30px rgba(0, 255, 136, 0.4),
+    inset 0 0 20px rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.5);
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* === BUTTONS === */
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 35px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 18px 40px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+/* Start Button */
+.btn-start {
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  color: #1a1a2e;
+  box-shadow:
+    0 0 30px rgba(0, 255, 136, 0.5),
+    0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-start:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00ffaa, #00ff88);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 50px rgba(0, 255, 136, 0.7),
+    0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.btn-start:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Stop Button */
+.btn-stop {
+  background: linear-gradient(135deg, #e94560, #c73e54);
+  color: #fff;
+  box-shadow:
+    0 0 30px rgba(233, 69, 96, 0.5),
+    0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-stop:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff6b8a, #e94560);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 50px rgba(233, 69, 96, 0.7),
+    0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.btn-stop:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Reset Button */
+.btn-reset {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: #1a1a2e;
+  box-shadow:
+    0 0 30px rgba(243, 156, 18, 0.5),
+    0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-reset:hover {
+  background: linear-gradient(135deg, #f5b041, #f39c12);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 50px rgba(243, 156, 18, 0.7),
+    0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* === MESSAGE === */
+.message {
+  font-size: 2.5rem;
+  margin-top: 35px;
+  color: #e94560;
+  font-weight: bold;
+  min-height: 60px;
+  text-shadow:
+    0 0 20px rgba(233, 69, 96, 1),
+    0 0 40px rgba(233, 69, 96, 0.9),
+    0 0 60px rgba(233, 69, 96, 0.7);
+  animation: messagePulse 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes messagePulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+}
+
+.message.hidden {
+  display: none;
+}
+
+/* === CELEBRATION CONTAINER === */
+.celebration-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* === SCANLINES EFFECT === */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.3;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .timer-display {
+    font-size: 4rem;
+  }
+
+  .input-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+    padding: 15px 20px;
+  }
+
+  .message {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+
+  .timer-display {
+    font-size: 3rem;
+    letter-spacing: 4px;
+  }
+
+  .input-group input {
+    width: 70px;
+    padding: 10px;
+    font-size: 1.1rem;
+  }
+
+  .message {
+    font-size: 1.5rem;
+  }
+}
