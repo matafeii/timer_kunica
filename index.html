@@ -4,153 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Таймер - КУНИЦА</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(
-          135deg,
-          #1a1a2e 0%,
-          #16213e 50%,
-          #0f3460 100%
-        );
-        color: #fff;
-      }
-
-      .container {
-        text-align: center;
-        padding: 40px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 30px;
-        color: #e94560;
-        text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
-      }
-
-      .timer-display {
-        font-size: 5rem;
-        font-weight: bold;
-        margin: 30px 0;
-        font-family: "Courier New", monospace;
-        color: #00ff88;
-        text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-      }
-
-      .input-group {
-        margin: 20px 0;
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .input-group label {
-        font-size: 1.2rem;
-      }
-
-      .input-group input {
-        width: 80px;
-        padding: 10px;
-        font-size: 1.2rem;
-        border: none;
-        border-radius: 8px;
-        text-align: center;
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
-      }
-
-      .input-group input::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      .buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-top: 30px;
-      }
-
-      button {
-        padding: 15px 30px;
-        font-size: 1.1rem;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: bold;
-      }
-
-      .btn-start {
-        background: #00ff88;
-        color: #1a1a2e;
-      }
-
-      .btn-start:hover {
-        background: #00cc6a;
-        transform: scale(1.05);
-      }
-
-      .btn-stop {
-        background: #e94560;
-        color: #fff;
-      }
-
-      .btn-stop:hover {
-        background: #c73e54;
-        transform: scale(1.05);
-      }
-
-      .btn-reset {
-        background: #f39c12;
-        color: #1a1a2e;
-      }
-
-      .btn-reset:hover {
-        background: #d68910;
-        transform: scale(1.05);
-      }
-
-      .message {
-        font-size: 2rem;
-        margin-top: 30px;
-        color: #e94560;
-        font-weight: bold;
-        min-height: 50px;
-        text-shadow: 0 0 15px rgba(233, 69, 96, 0.7);
-        animation: pulse 0.5s ease-in-out infinite alternate;
-      }
-
-      @keyframes pulse {
-        from {
-          opacity: 1;
-        }
-        to {
-          opacity: 0.7;
-        }
-      }
-
-      .hidden {
-        display: none;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
+    <!-- Video Background -->
+    <video id="video-bg" autoplay muted loop playsinline>
+      <source
+        src="https://assets.mixkit.co/videos/preview/mixkit-night-sky-with-stars-and-clouds-24064-large.mp4"
+        type="video/mp4"
+      />
+    </video>
+
+    <div id="canvas-container"></div>
+    <div class="overlay"></div>
+    <div class="celebration-container" id="celebration-container"></div>
+    <div class="scanlines"></div>
+
+    <div class="container" id="mainContainer">
       <h1>⏱️ ТАЙМЕР КУНИЦЫ</h1>
 
       <div class="input-group">
@@ -189,220 +59,15 @@
       <div class="message" id="message"></div>
     </div>
 
-    <script>
-      let timerInterval = null;
-      let totalSeconds = 0;
-      let remainingSeconds = 0;
-      let isRunning = false;
-      let audioContext = null;
+    <!-- Three.js Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 
-      const display = document.getElementById("display");
-      const minutesInput = document.getElementById("minutes");
-      const secondsInput = document.getElementById("seconds");
-      const startBtn = document.getElementById("startBtn");
-      const stopBtn = document.getElementById("stopBtn");
-      const messageEl = document.getElementById("message");
-
-      function updateDisplay() {
-        const mins = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-        display.textContent = `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-      }
-
-      function startTimer() {
-        if (isRunning) return;
-
-        const mins = parseInt(minutesInput.value) || 0;
-        const secs = parseInt(secondsInput.value) || 0;
-
-        if (remainingSeconds === 0) {
-          totalSeconds = mins * 60 + secs;
-          remainingSeconds = totalSeconds;
-        }
-
-        if (remainingSeconds <= 0) {
-          alert("Будь ласка, встановіть час таймера!");
-          return;
-        }
-
-        isRunning = true;
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        minutesInput.disabled = true;
-        secondsInput.disabled = true;
-
-        timerInterval = setInterval(() => {
-          remainingSeconds--;
-          updateDisplay();
-
-          if (remainingSeconds <= 0) {
-            timerFinished();
-          }
-        }, 1000);
-      }
-
-      function stopTimer() {
-        if (!isRunning) return;
-
-        clearInterval(timerInterval);
-        isRunning = false;
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-      }
-
-      function resetTimer() {
-        stopTimer();
-        remainingSeconds = 0;
-        totalSeconds = 0;
-        minutesInput.disabled = false;
-        secondsInput.disabled = false;
-        minutesInput.value = 25;
-        secondsInput.value = 0;
-        updateDisplay();
-        messageEl.textContent = "";
-        messageEl.classList.add("hidden");
-      }
-
-      function timerFinished() {
-        stopTimer();
-        remainingSeconds = 0;
-        updateDisplay();
-        minutesInput.disabled = false;
-        secondsInput.disabled = false;
-
-        messageEl.textContent = "ВРЕМЯ ДЕЛАТЬ КУНИЦУ!";
-        messageEl.classList.remove("hidden");
-
-        playSiren();
-        speakText();
-      }
-
-      function playSiren() {
-        // Используем Web Audio API для создания звука сирены
-        try {
-          audioContext = new (
-            window.AudioContext || window.webkitAudioContext
-          )();
-
-          const oscillator1 = audioContext.createOscillator();
-          const oscillator2 = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-
-          oscillator1.type = "sine";
-          oscillator2.type = "sine";
-
-          // Частоты для сирены (чередование)
-          oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
-          oscillator1.frequency.setValueAtTime(
-            600,
-            audioContext.currentTime + 0.25,
-          );
-          oscillator1.frequency.setValueAtTime(
-            800,
-            audioContext.currentTime + 0.5,
-          );
-          oscillator1.frequency.setValueAtTime(
-            600,
-            audioContext.currentTime + 0.75,
-          );
-
-          oscillator2.frequency.setValueAtTime(820, audioContext.currentTime);
-          oscillator2.frequency.setValueAtTime(
-            620,
-            audioContext.currentTime + 0.25,
-          );
-          oscillator2.frequency.setValueAtTime(
-            820,
-            audioContext.currentTime + 0.5,
-          );
-          oscillator2.frequency.setValueAtTime(
-            620,
-            audioContext.currentTime + 0.75,
-          );
-
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(
-            0.01,
-            audioContext.currentTime + 3,
-          );
-
-          oscillator1.connect(gainNode);
-          oscillator2.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-
-          oscillator1.start(audioContext.currentTime);
-          oscillator2.start(audioContext.currentTime);
-          oscillator1.stop(audioContext.currentTime + 3);
-          oscillator2.stop(audioContext.currentTime + 3);
-
-          // Повторяем сирену 3 раза
-          setTimeout(() => playSirenPart(2), 3500);
-          setTimeout(() => playSirenPart(1), 7000);
-        } catch (e) {
-          console.log("Audio error:", e);
-        }
-      }
-
-      function playSirenPart(repeat) {
-        if (repeat <= 0) return;
-
-        const osc1 = audioContext.createOscillator();
-        const osc2 = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-
-        osc1.type = "sine";
-        osc2.type = "sine";
-
-        osc1.frequency.setValueAtTime(800, audioContext.currentTime);
-        osc1.frequency.setValueAtTime(600, audioContext.currentTime + 0.25);
-        osc1.frequency.setValueAtTime(800, audioContext.currentTime + 0.5);
-        osc1.frequency.setValueAtTime(600, audioContext.currentTime + 0.75);
-
-        osc2.frequency.setValueAtTime(820, audioContext.currentTime);
-        osc2.frequency.setValueAtTime(620, audioContext.currentTime + 0.25);
-        osc2.frequency.setValueAtTime(820, audioContext.currentTime + 0.5);
-        osc2.frequency.setValueAtTime(620, audioContext.currentTime + 0.75);
-
-        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(
-          0.01,
-          audioContext.currentTime + 3,
-        );
-
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(audioContext.destination);
-
-        osc1.start();
-        osc2.start();
-        osc1.stop(audioContext.currentTime + 3);
-        osc2.stop(audioContext.currentTime + 3);
-      }
-
-      function speakText() {
-        // Используем Web Speech API для произнесения текста
-        if ("speechSynthesis" in window) {
-          // Произносим текст 3 раза
-          speakOnce(0);
-          speakOnce(3000);
-          speakOnce(6000);
-        }
-      }
-
-      function speakOnce(delay) {
-        setTimeout(() => {
-          const utterance = new SpeechSynthesisUtterance(
-            "ВРЕМЯ ДЕЛАТЬ КУНИЦУ!",
-          );
-          utterance.lang = "ru-RU";
-          utterance.rate = 0.9;
-          utterance.pitch = 1;
-          window.speechSynthesis.speak(utterance);
-        }, delay);
-      }
-
-      // Инициализация отображения
-      updateDisplay();
-    </script>
+    <script src="main.js"></script>
   </body>
 </html>
